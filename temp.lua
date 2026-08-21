@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Dynamically generate the window title with a welcome message
-local windowTitle = "Larp Muscle Leyends 2 Public | Welcome " .. LocalPlayer.DisplayName
+local windowTitle = "Larp Muscle Leyends 2 Public | By V.Roy (chupame la polla puto sudaca)| Welcome " .. LocalPlayer.DisplayName
 
 local window = library:AddWindow(windowTitle, {
     main_color = Color3.fromRGB(150, 150, 150),
