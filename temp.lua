@@ -788,7 +788,7 @@ mainTab:AddSwitch("Auto Sell Golden sun pegasus", function(state)
 end)
 
 -- The specific sellPet remote script wrapped inside an AddSwitch loop
-mainTab:AddSwitch("Auto Sell Darkstorm Elemental Hydra, function(state)
+mainTab:AddSwitch("Auto Sell Darkstorm Elemental Hydra", function(state)
     getgenv().AutoSell = state
     
     -- When the switch is turned ON, start a repeating loop
