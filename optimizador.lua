@@ -11,20 +11,6 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 --==================================================
--- CONFIG
---==================================================
-
-local DEFAULT_WALK_SPEED = 16
-local DEFAULT_SIZE = 1
-
-local walkSpeed = DEFAULT_WALK_SPEED
-local currentSize = DEFAULT_SIZE
-
-local lockConnection = nil
-local antiFlingConnection = nil
-local walkOnWaterPart = nil
-
---==================================================
 -- CHARACTER HELPERS
 --==================================================
 
@@ -122,7 +108,7 @@ Title.Name = "Title"
 Title.Size = UDim2.new(1, 0, 0, 50)
 Title.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
 Title.BorderSizePixel = 0
-Title.Text = "Real Gansta Menu | Farming | New UPD"
+Title.Text = "Real Gansta Menu | Optimize Frame | New UPD"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
 Title.Font = Enum.Font.GothamBold
