@@ -587,33 +587,55 @@ rebirthsStat:GetPropertyChangedSignal("Value"):Connect(function()
     updateRebirthsLabel()
 end)
 
+local currentPetName = "Swift Samurai"
+
+local function equipPet(petName)
+    for _, pet in pairs(player.petsFolder.Unique:GetChildren()) do
+        if pet.Name == petName then
+            replicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
+            task.wait(0.1)
+            return true
+        end
+    end
+
+    return false
+end
+
 local function doRebirth()
     local rebirths = rebirthsStat.Value
     local strengthTarget = 5000 + (rebirths * 2550)
-    
+
     while isRunning and player.leaderstats.Strength.Value < strengthTarget do
         local reps = player.MembershipType == Enum.MembershipType.Premium and 8 or 14
+
         for _ = 1, reps do
             muscleEvent:FireServer("rep")
         end
+
         task.wait(0.01)
     end
-    
+
     if isRunning and player.leaderstats.Strength.Value >= strengthTarget then
-        managePets("Tribal Overlord")
-        task.wait(0.1)
-        
         local before = rebirthsStat.Value
+
         repeat
             replicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
             task.wait(0.05)
         until rebirthsStat.Value > before or not isRunning
+
+        -- Volver a equipar la pet después del rebirth
+        if isRunning then
+            task.wait(0.2)
+            equipPet(currentPetName)
+        end
     end
 end
 
 local function fastRebirthLoop()
+    -- Equipar una sola vez al comenzar
+    equipPet(currentPetName)
+
     while isRunning do
-        managePets("Swift Samurai")
         doRebirth()
         task.wait(0.05)
     end
