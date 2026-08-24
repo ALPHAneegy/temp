@@ -54,7 +54,7 @@ do
     end
 end
 local II1llI11Il = {
-    ["Title"] = "Fast Glitch 100% | Crack by 2zvh",
+    ["Title"] = "Fast Glitch 100% | Crack by 2zvh and Me",
     ["Discord"] = "https://discord.gg/NxZNRGJfQc",
     ["YouTube"] = "https://www.youtube.com/@Real_Young0x",
     ["Reverse Engineer: 2zvh"] = "https://2zvh.xyz/",
