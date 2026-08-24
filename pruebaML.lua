@@ -29,86 +29,139 @@ local function createAllParts()
 end
 task.spawn(createAllParts)
 
--- Rainbow Text Label (ANTI AFK Text)
-local TextLabel = Instance.new("TextLabel")
-TextLabel.Size = UDim2.new(1, 0, 1, 0)
-TextLabel.BackgroundTransparency = 1
-TextLabel.Text = "ANTI AFK: 00:00:00"
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.Font = Enum.Font.GothamBold
-TextLabel.TextSize = 25 
-TextLabel.TextXAlignment = Enum.TextXAlignment.Center
-TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-TextLabel.Parent = MainFrame
+--// =========================
+--// ANTI-AFK
+--// =========================
 
--- 3. Add to your Elerium Tab
-local AntiAFKSwitch = mainTab:AddSwitch("Anti-AFK ", function(bool)
-    if bool then
-        -- Make the ScreenGui container visible
-        MainFrame.Visible = true
-        
-        -- Start Infinite Yield style Anti-AFK engine (uses LocalPlayer.Idled event + VirtualUser)
-        if not AntiAFKConnection then
-            AntiAFKConnection = player.Idled:Connect(function()
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new())
-            end)
-        end
-        
-        -- Start clock thread
-        if not AFKTimerThread then
-            AFKTimerThread = task.spawn(function()
-                local startTime = os.time()
-                while true do
-                    local elapsed = os.time() - startTime
-                    local hours = math.floor(elapsed / 3600)
-                    local minutes = math.floor((elapsed % 3600) / 60)
-                    local seconds = elapsed % 60
-                    
-                    TextLabel.Text = string.format("ANTI AFK: %02d:%02d:%02d", hours, minutes, seconds)
-                    task.wait(1)
-                end
-            end)
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local AntiAFKConnection = nil
+local AFKTimerThread = nil
+local RainbowThread = nil
+local AntiAFKEnabled = false
+local AntiAFKStartTime = 0
+
+-- GUI independiente para Anti-AFK
+local AntiAFKGui = Instance.new("ScreenGui")
+AntiAFKGui.Name = "AntiAFKGui"
+AntiAFKGui.ResetOnSpawn = false
+AntiAFKGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+AntiAFKGui.Enabled = false
+AntiAFKGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local AntiAFKLabel = Instance.new("TextLabel")
+AntiAFKLabel.Name = "Timer"
+AntiAFKLabel.Size = UDim2.new(0, 300, 0, 40)
+AntiAFKLabel.Position = UDim2.new(0.5, -150, 0, 10)
+AntiAFKLabel.BackgroundTransparency = 1
+AntiAFKLabel.Text = "ANTI AFK: 00:00:00"
+AntiAFKLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+AntiAFKLabel.Font = Enum.Font.GothamBold
+AntiAFKLabel.TextSize = 25
+AntiAFKLabel.TextXAlignment = Enum.TextXAlignment.Center
+AntiAFKLabel.TextYAlignment = Enum.TextYAlignment.Center
+AntiAFKLabel.Parent = AntiAFKGui
+
+
+local function stopAntiAFK()
+    AntiAFKEnabled = false
+
+    -- Desconectar evento Idled
+    if AntiAFKConnection then
+        AntiAFKConnection:Disconnect()
+        AntiAFKConnection = nil
+    end
+
+    -- Cancelar contador
+    if AFKTimerThread then
+        task.cancel(AFKTimerThread)
+        AFKTimerThread = nil
+    end
+
+    -- Cancelar rainbow
+    if RainbowThread then
+        task.cancel(RainbowThread)
+        RainbowThread = nil
+    end
+
+    -- Ocultar GUI
+    AntiAFKGui.Enabled = false
+end
+
+
+local function startAntiAFK()
+    -- Evitar duplicados
+    stopAntiAFK()
+
+    AntiAFKEnabled = true
+    AntiAFKStartTime = os.clock()
+
+    AntiAFKGui.Enabled = true
+
+    --// Anti-AFK real
+    AntiAFKConnection = LocalPlayer.Idled:Connect(function()
+        if not AntiAFKEnabled then
+            return
         end
 
-        -- Start Rainbow Text dynamic loop thread
-        if not RainbowThread then
-            RainbowThread = task.spawn(function()
-                local hue = 0
-                while true do
-                    TextLabel.TextColor3 = Color3.fromHSV(hue, 1, 1)
-                    hue = hue + 0.01
-                    if hue >= 1 then
-                        hue = 0
-                    end
-                    task.wait(0.03)
-                end
-            end)
+        pcall(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new(0, 0))
+        end)
+    end)
+
+    --// Contador
+    AFKTimerThread = task.spawn(function()
+        while AntiAFKEnabled do
+            local elapsed = math.floor(os.clock() - AntiAFKStartTime)
+
+            local hours = math.floor(elapsed / 3600)
+            local minutes = math.floor((elapsed % 3600) / 60)
+            local seconds = elapsed % 60
+
+            AntiAFKLabel.Text = string.format(
+                "ANTI AFK: %02d:%02d:%02d",
+                hours,
+                minutes,
+                seconds
+            )
+
+            task.wait(1)
         end
+    end)
+
+    --// Rainbow
+    RainbowThread = task.spawn(function()
+        local hue = 0
+
+        while AntiAFKEnabled do
+            AntiAFKLabel.TextColor3 = Color3.fromHSV(hue, 1, 1)
+
+            hue += 0.01
+
+            if hue >= 1 then
+                hue = 0
+            end
+
+            task.wait(0.03)
+        end
+    end)
+end
+
+
+local AntiAFKSwitch = MainTab:AddSwitch("Anti-AFK", function(state)
+    if state then
+        startAntiAFK()
     else
-        -- Hide the ScreenGui container completely
-        MainFrame.Visible = false
-        
-        -- Stop everything safely
-        if typeof(AntiAFKConnection) == "RBXScriptConnection" then
-            AntiAFKConnection:Disconnect()
-            AntiAFKConnection = nil
-        elseif typeof(AntiAFKConnection) == "thread" then
-            task.cancel(AntiAFKConnection)
-            AntiAFKConnection = nil
-        end
-        
-        if AFKTimerThread then
-            task.cancel(AFKTimerThread)
-            AFKTimerThread = nil
-        end
-
-        if RainbowThread then
-            task.cancel(RainbowThread)
-            RainbowThread = nil
-        end
+        stopAntiAFK()
     end
 end)
+
+AntiAFKSwitch:Set(false)
 
 walkonwaterSwicth:Set(false)
 
