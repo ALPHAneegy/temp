@@ -6113,7 +6113,6 @@ end
 do
     local ll11lI11Il = I111l111Il["Info"]
     lll1l111Il(ll11lI11Il, "\195\176\194\159\194\145\194\164 Info Player \195\176\194\159\194\145\194\164")
-    lIIll111Il(ll11lI11Il, "User:", IIIllI11Il["None"], l11llI11Il["white"])
     local lIl1lI11Il, IIl1lI11Il = lIIll111Il(ll11lI11Il, "FPS:", "0", l11llI11Il["green"], true)
     local l1l1lI11Il = IIl1lI11Il:FindFirstChild("StatusDot")
     local I1l1lI11Il = isCachedPingValid()
