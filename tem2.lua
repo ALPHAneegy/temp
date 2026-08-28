@@ -10,7 +10,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Dynamically generate the window title with a welcome message
-local windowTitle = "Larp Muscle Leyends 2 Public | By VRoy | Welcome " .. LocalPlayer.DisplayName
+local windowTitle = "Larp HUB Muscle Leyends Reborn | By VRoy | Welcome " .. LocalPlayer.DisplayName
 
 local window = library:AddWindow(windowTitle, {
     main_color = Color3.fromRGB(150, 150, 150),
@@ -286,7 +286,7 @@ end)
 
 -- Global State Flags for the Switches
 local farmActive = false
-local rebirthActive = false
+local rebirthActive3 = false
 local speedActive = false
 local rebirthActive2 = false
 
@@ -392,30 +392,7 @@ mainTab:AddSwitch("Fast Reps Push Ups", function(state)
     end
 end)
 
--- SWITCH 2: Auto Rebirth (500)
-mainTab:AddSwitch("Fast Rebirth (500)", function(state)
-    rebirthActive = state
-    
-    if rebirthActive then
-        task.spawn(function()
-            while rebirthActive do
-                local rEvents = replicatedStorage:FindFirstChild("rEvents")
-                if rEvents and rEvents:FindFirstChild("rebirthRemote") then
-                    
-                    local args = {
-                        [1] = "massRebirthRequest",
-                        [2] = 500
-                    }
-                    
-                    rEvents.rebirthRemote:InvokeServer(unpack(args))
-                end
-                task.wait(0.1) 
-            end
-        end)
-    end
-end)
-
-mainTab:AddSwitch("Fast Rebirth 1", function(state)
+mainTab:AddSwitch("Fast Rebirth 10000", function(state)
     rebirthActive2 = state
     
     if rebirthActive2 then
@@ -426,7 +403,29 @@ mainTab:AddSwitch("Fast Rebirth 1", function(state)
                     
                     local args = {
                         [1] = "rebirthRequest",
-                        [2] = 1
+                        [2] = 10000
+                    }
+                    
+                    rEvents.rebirthRemote:InvokeServer(unpack(args))
+                end
+                task.wait(0.1) 
+            end
+        end)
+    end
+end)
+
+mainTab:AddSwitch("Fast Rebirth (max)", function(state)
+    rebirthActive3 = state
+    
+    if rebirthActive3 then
+        task.spawn(function()
+            while rebirthActive3 do
+                local rEvents = replicatedStorage:FindFirstChild("rEvents")
+                if rEvents and rEvents:FindFirstChild("rebirthRemote") then
+                    
+                    local args = {
+                        [1] = "rebirthRequest",
+                        [2] = 40000
                     }
                     
                     rEvents.rebirthRemote:InvokeServer(unpack(args))
@@ -595,7 +594,9 @@ end
 SpinFortuneWheel()
 end)
 
-local mainTab = window:AddTab("Crystals")
+local mainTab = window:AddTab("Fast open Crystals")
+
+mainTab:AddLabel("You need to be enough close to fast open the selected crystal.")
 
 -- State variables
 local autoOpenActive = false
@@ -619,10 +620,10 @@ local crystalDropdown = mainTab:AddDropdown("Select Crystal", function(choice)
 end)
 
 -- Populating dropdown items following strict Elerium structural formats
-crystalDropdown:Add("Infinity Void Crystal")
-crystalDropdown:Add("Unlimited Secrets Crystal")
-crystalDropdown:Add("Ultra Shockwave Crystal")
-crystalDropdown:Add("Secret Void Crystal")
+crystalDropdown:Add("Chaos Crystal")
+crystalDropdown:Add("Dark Nebula Crystal")
+crystalDropdown:Add("Infernal Crystal")
+crystalDropdown:Add("Godly Crystal")
 crystalDropdown:Add("Jungle Crystal")
 crystalDropdown:Add("Galaxy Oracle Crystal")
 crystalDropdown:Add("Muscle Elite Crystal")
@@ -946,14 +947,14 @@ local equiper = window:AddTab("Pets")
 
 equiper:AddLabel("Mass Equip / Unequip Toggles")
 
-equiper:AddSwitch("Equip / Unequip All Elite Pets", function(state)
-    getgenv().equipElite = state
-    v37("Elite", state)
+equiper:AddSwitch("Equip / Unequip All Unique Pets", function(state)
+    getgenv().equipUnique = state
+    v37("Unique", state)
 end)
 
-equiper:AddSwitch("Equip / Unequip All Rising Hero Pets", function(state)
-    getgenv().equipRisingHero = state
-    v37("Rising Hero", state)
+equiper:AddSwitch("Equip / Unequip All Epic Pets", function(state)
+    getgenv().equipEpic = state
+    v37("Epic", state)
 end)
 
 equiper:AddSwitch("Equip / Unequip All Master Legend Pets", function(state)
@@ -1014,22 +1015,12 @@ local function teleportToLocation(position, notificationText)
     end
 end
 
-teleport:AddButton("Tiny Island", function()
-    local Event = game:GetService("ReplicatedStorage").rEvents.areaTravelRemote
-    local Result = table.pack(Event:InvokeServer(
-    "travelToArea",
-    workspace.areaCircles:GetChildren()[16]
-    ))
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Teletransporte",
-        Text = "Teleported to Tiny Island",
-        Duration = 0
-    })
-end)
-
 local teleportLocations = {
-    { name = "Teleport Temple",  pos = Vector3.new(-1825, 103, -3743), text = "Teleportando a Temple Area" },
-    { name = "Teleport Frozen",  pos = Vector3.new(-2600.00244, 3.67686558, -403.884369), text = "Teleportando a Área Congelada" },
+    { name = "Divine",  pos = Vector3.new(-946.92, 21.87, -3061.76), text = "Teleportando a Divine Area" },
+    { name = "Infernal",  pos = Vector3.new(1939.77, 16.81, -4597.62), text = "Teleportando a Infernal Area" },
+    { name = "Warrior",  pos = Vector3.new(-4142.89, 2.79, 1610.94), text = "Teleportando a Warrior Area" },
+    { name = "Caos",  pos = Vector3.new(-6608.91, 9.75, 5676.11), text = "Teleportando a Caos Area" },
+    { name = "Frozen",  pos = Vector3.new(-2600.00244, 3.67686558, -403.884369), text = "Teleportando a Área Congelada" },
     { name = "Mythical",         pos = Vector3.new(2255, 7, 1071),                   text = "Teleportando a Área Mística" },
     { name = "Inferno",          pos = Vector3.new(-6768, 7, -1287),                 text = "Teleportando a Área Inferno" },
     { name = "Legend",           pos = Vector3.new(4604, 991, -3887),                text = "Teleportando a Área das Lendas" },
